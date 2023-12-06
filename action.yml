@@ -1,0 +1,80 @@
+name: "Build and Push to GCR"
+author: "Anas Solanki"
+description: |-
+  An action to build and push docker images to GCR.   
+inputs:
+  credentials_json:
+    description: |-
+      Credential file for GCP authentication.
+    required: true
+  repository_location:
+    description: |-
+      GCR repository location to push images.
+    default: asia
+  repository_name:
+    description: |-
+      GCR repository name to push images.
+    default: asia.gcr.io
+  project_id:
+    description: |-
+      GCP project ID.
+    required: true
+  service_id:
+    description: |-
+      This is the name of the service you want to build and push.
+    required: true
+  tag:
+    description: |-
+      container tag
+    default: latest
+  version:
+    description: |-
+      container tag
+    required: true
+  action_token:
+    description: |-
+      This is github action token
+    required: true
+  build_environment:
+    description: |-
+      Environment on which service needs to be publish
+    default: development
+  build_args:
+    description: |-
+      Build arguments required to build docker images
+    required: false
+
+   
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout Repository"
+      uses: actions/checkout@v3
+
+    - name: "gcloud auth"
+      uses: "google-github-actions/auth@v1"
+      with:
+        credentials_json: ${{ inputs.credentials_json }}
+
+    - uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ inputs.project_id }}
+
+    - uses: docker/setup-buildx-action@master
+
+    - name: "Configure Docker Credentials Helper"
+      shell: bash
+      run: gcloud --quiet auth configure-docker ${{ inputs.repository_location }}-docker.pkg.dev
+
+    - name: Build image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        build-args: ${{ inputs.build_args }}
+        tags: |
+          ${{ inputs.repository_location }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.repository_name }}/${{ inputs.service_id }}:${{ inputs.tag }}
+          ${{ inputs.repository_location }}-docker.pkg.dev/${{ inputs.project_id }}/${{ inputs.repository_name }}/${{ inputs.service_id }}:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
