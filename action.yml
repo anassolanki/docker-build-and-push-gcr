@@ -10,11 +10,9 @@ inputs:
   repository_location:
     description: |-
       GCR repository location to push images.
-    default: asia
   repository_name:
     description: |-
       GCR repository name to push images.
-    default: asia.gcr.io
   project_id:
     description: |-
       GCP project ID.
