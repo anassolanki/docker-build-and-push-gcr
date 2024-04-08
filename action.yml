@@ -1,7 +1,7 @@
 name: "Build and Push to GCR"
 author: "Anas Solanki"
 description: |-
-  An action to build and push docker images to GCR.   
+  An action to build and push docker images to GCR.
 inputs:
   credentials_json:
     description: |-
@@ -42,8 +42,6 @@ inputs:
       Build arguments required to build docker images
     required: false
 
-   
-
 runs:
   using: "composite"
   steps:
@@ -66,7 +64,7 @@ runs:
       run: gcloud --quiet auth configure-docker ${{ inputs.repository_location }}-docker.pkg.dev
 
     - name: Build image
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: true
