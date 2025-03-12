@@ -57,9 +57,10 @@ runs:
   steps:
     - name: "Checkout Repository"
       uses: actions/checkout@v4
-      repository: ${{ inputs.code_repository }}
-      ref: ${{ inputs.code_ref_branch }}
-      token: ${{ inputs.action_token }}
+      with:
+        repository: ${{ inputs.code_repository }}
+        ref: ${{ inputs.code_ref_branch }}
+        token: ${{ inputs.action_token }}
 
     - name: "gcloud auth"
       uses: "google-github-actions/auth@v2"
