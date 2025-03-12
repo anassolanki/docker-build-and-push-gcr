@@ -41,12 +41,25 @@ inputs:
     description: |-
       Build arguments required to build docker images
     required: false
+  code_repository:
+    description: |-
+      Repository to clone.
+    required: false
+    default: ${{ github.repository }}
+  code_ref_branch:
+    description: |-
+      Repository branch to clone.
+    required: false
+    default: ''
 
 runs:
   using: "composite"
   steps:
     - name: "Checkout Repository"
       uses: actions/checkout@v4
+      repository: ${{ inputs.code_repository }}
+      ref: ${{ inputs.code_ref_branch }}
+      token: ${{ inputs.action_token }}
 
     - name: "gcloud auth"
       uses: "google-github-actions/auth@v2"
